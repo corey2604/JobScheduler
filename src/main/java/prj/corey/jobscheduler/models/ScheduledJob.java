@@ -1,14 +1,14 @@
 package prj.corey.jobscheduler.models;
 
 public class ScheduledJob {
-    private String type;
+    private ScheduledJobType type;
     private String content;
 
-    public String getType() {
+    public ScheduledJobType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ScheduledJobType type) {
         this.type = type;
     }
 

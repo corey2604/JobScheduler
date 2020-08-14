@@ -9,6 +9,9 @@ import prj.corey.jobscheduler.jobs.PrintJob;
 import prj.corey.jobscheduler.jobs.SystemCallJob;
 import prj.corey.jobscheduler.jobs.WriteToFileJob;
 import prj.corey.jobscheduler.models.ScheduledJob;
+import prj.corey.jobscheduler.models.ScheduledJobType;
+
+import static prj.corey.jobscheduler.models.ScheduledJobType.*;
 
 @RestController
 public class JobSchedulerController {
@@ -22,18 +25,19 @@ public class JobSchedulerController {
         //TODO: Setting default job to print job for testing
         JobDetail job = createJob(PrintJob.class,"printJob", PRINT_JOB_GROUP, "User job was not run");
         Trigger trigger = createTrigger("printJobTrigger", PRINT_JOB_GROUP);
+        ScheduledJobType scheduledJobType = scheduledJob.getType();
 
         switch(scheduledJob.getType()) {
-            case "print":
-                job = createJob(PrintJob.class,"printJob", PRINT_JOB_GROUP, scheduledJob.getContent());
+            case PRINT:
+                job = createJob(scheduledJobType.getJobClass(),"printJob", PRINT_JOB_GROUP, scheduledJob.getContent());
                 trigger = createTrigger("printJobTrigger", PRINT_JOB_GROUP);
                 break;
-            case "system_call":
-                job = createJob(SystemCallJob.class, "systemCallJob", SYSTEM_CALL_JOB_GROUP, scheduledJob.getContent());
+            case SYSTEM_CALL:
+                job = createJob(scheduledJobType.getJobClass(), "systemCallJob", SYSTEM_CALL_JOB_GROUP, scheduledJob.getContent());
                 trigger = createTrigger("systemCallTrigger", SYSTEM_CALL_JOB_GROUP);
                 break;
-            case "write_to_file":
-                job = createJob(WriteToFileJob.class, "writeToFileJob", WRITE_TO_FILE_JOB_GROUP, scheduledJob.getContent());
+            case WRITE_TO_FILE:
+                job = createJob(scheduledJobType.getJobClass(), "writeToFileJob", WRITE_TO_FILE_JOB_GROUP, scheduledJob.getContent());
                 trigger = createTrigger("writeToFileTrigger", WRITE_TO_FILE_JOB_GROUP);
                 break;
             default:
