@@ -1,14 +1,13 @@
 package prj.corey.jobscheduler.jobs;
 
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 
 import java.io.IOException;
 
-public class SystemCallJob implements Job {
-    public static final String CONTENT = "No Content Supplied";
+public class SystemCallJob extends AbstractJob {
 
+    @Override
     public void execute(JobExecutionContext context) {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         String systemCallCommand = dataMap.getString(CONTENT);
