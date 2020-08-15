@@ -4,20 +4,22 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import prj.corey.jobscheduler.jobs.PrintJob;
+import prj.corey.jobscheduler.jobs.AbstractJob;
 import prj.corey.jobscheduler.models.ScheduledJob;
 
+import java.util.Date;
+
 @RestController
+@RequestMapping(path = "/jobs")
 public class JobSchedulerController {
     private static final String JOB_GROUP = "jobSchedulerGroup";
 
-    @PostMapping(path = "/jobs", consumes = "application/json")
+    @PostMapping(consumes = "application/json")
     public void runJob(@RequestBody ScheduledJob scheduledJob) {
-
-        //TODO: Setting default job to print job for testing
-        JobDetail job = createJob(scheduledJob.getType().getJobClass(), scheduledJob.getName(), JOB_GROUP, scheduledJob.getContent());
-        Trigger trigger = createTrigger(scheduledJob.getName() + "Trigger", JOB_GROUP);
+        JobDetail job = createJob(scheduledJob.getType().getJobClass(), scheduledJob.getName(), scheduledJob.getContent());
+        Trigger trigger = createTrigger(scheduledJob.getName() + "Trigger", scheduledJob.getStartTime());
         try {
             Scheduler scheduler = new StdSchedulerFactory().getScheduler();
             scheduler.start();
@@ -27,20 +29,22 @@ public class JobSchedulerController {
         }
     }
 
-    private JobDetail createJob(Class<? extends Job> jobClass, String jobName, String group, String content) {
+    private JobDetail createJob(Class<? extends Job> jobClass, String jobName, String content) {
         return JobBuilder.newJob(jobClass)
-                .withIdentity(jobName, group)
-                .usingJobData(PrintJob.CONTENT, content)
+                .withIdentity(jobName, JOB_GROUP)
+                .usingJobData(AbstractJob.CONTENT, content)
                 .build();
     }
 
-    private Trigger createTrigger(String triggerName, String group) {
-        return TriggerBuilder
+    private Trigger createTrigger(String triggerName, Date startTime) {
+        TriggerBuilder triggerBuilder = TriggerBuilder
                 .newTrigger()
-                .withIdentity(triggerName, group)
+                .withIdentity(triggerName, JOB_GROUP)
+                .startAt(startTime)
                 .withSchedule(
                         SimpleScheduleBuilder.simpleSchedule()
-                                .withIntervalInSeconds(5).repeatForever())
-                .build();
+                                .withIntervalInSeconds(5).repeatForever());
+
+        return triggerBuilder.build();
     }
 }
