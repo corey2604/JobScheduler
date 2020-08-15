@@ -12,6 +12,7 @@ public class ScheduledJob {
     private Date startTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Europe/London")
     private Date endTime;
+    private String jobStatus;
 
     public String getName() {
         return name;
@@ -51,5 +52,13 @@ public class ScheduledJob {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+    }
+
+    public String getJobStatus() {
+        return jobStatus;
+    }
+
+    public void setJobStatus(String jobStatus) {
+        this.jobStatus = jobStatus;
     }
 }
