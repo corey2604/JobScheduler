@@ -4,7 +4,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 
 public abstract class AbstractJob implements Job {
-    public static final String CONTENT = "No Content Supplied";
+    public static final String CONTENT = "content";
 
     public abstract void execute(JobExecutionContext context);
 }
