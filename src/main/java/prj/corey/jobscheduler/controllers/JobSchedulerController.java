@@ -65,17 +65,36 @@ public class JobSchedulerController {
     public ResponseEntity stopJob(@PathVariable String jobName) {
         try {
             Scheduler scheduler = new StdSchedulerFactory().getScheduler();
-            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(JOB_GROUP))) {
-                if (jobKey.getName().equals(jobName)) {
-                    scheduler.interrupt(jobKey);
-                    scheduler.pauseJob(jobKey);
-                }
-            }
+            JobKey jobKey = getJobKeyFromName(scheduler, jobName);
+            scheduler.interrupt(jobKey);
+            scheduler.pauseJob(jobKey);
             return ResponseEntity.ok(jobName + "paused");
         } catch (SchedulerException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @PatchMapping("/{jobName}/resume")
+    public ResponseEntity resumeJob(@PathVariable String jobName) {
+        try {
+            Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+            JobKey jobKey = getJobKeyFromName(scheduler, jobName);
+            scheduler.resumeJob(jobKey);
+            return ResponseEntity.ok(jobName + "resumed execution");
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    private JobKey getJobKeyFromName(Scheduler scheduler, String jobName) throws SchedulerException {
+        for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(JOB_GROUP))) {
+            if (jobKey.getName().equals(jobName)) {
+                return jobKey;
+            }
+        }
+        throw new SchedulerException();
     }
 
     private JobDetail createJob(ScheduledJobType jobType, String jobName, String content) {
