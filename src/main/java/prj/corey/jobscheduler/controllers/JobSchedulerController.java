@@ -2,6 +2,9 @@ package prj.corey.jobscheduler.controllers;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,16 +20,19 @@ public class JobSchedulerController {
     private static final String JOB_GROUP = "jobSchedulerGroup";
 
     @PostMapping(consumes = "application/json")
-    public void runJob(@RequestBody ScheduledJob scheduledJob) {
+    public ResponseEntity runJob(@RequestBody ScheduledJob scheduledJob) {
         JobDetail job = createJob(scheduledJob.getType().getJobClass(), scheduledJob.getName(), scheduledJob.getContent());
-        Trigger trigger = createTrigger(scheduledJob.getName() + "Trigger", scheduledJob.getStartTime());
+        Trigger trigger = createTrigger(scheduledJob.getName() + "Trigger", scheduledJob.getStartTime(), scheduledJob.getEndTime());
         try {
             Scheduler scheduler = new StdSchedulerFactory().getScheduler();
             scheduler.start();
             scheduler.scheduleJob(job, trigger);
+            return ResponseEntity.ok(scheduledJob);
         } catch (SchedulerException e) {
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+
     }
 
     private JobDetail createJob(Class<? extends Job> jobClass, String jobName, String content) {
@@ -36,15 +42,15 @@ public class JobSchedulerController {
                 .build();
     }
 
-    private Trigger createTrigger(String triggerName, Date startTime) {
-        TriggerBuilder triggerBuilder = TriggerBuilder
+    private Trigger createTrigger(String triggerName, Date startTime, Date endTime) {
+        return TriggerBuilder
                 .newTrigger()
                 .withIdentity(triggerName, JOB_GROUP)
                 .startAt(startTime)
+                .endAt(endTime)
                 .withSchedule(
                         SimpleScheduleBuilder.simpleSchedule()
-                                .withIntervalInSeconds(5).repeatForever());
-
-        return triggerBuilder.build();
+                                .withIntervalInSeconds(5).repeatForever())
+                .build();
     }
 }
