@@ -61,6 +61,23 @@ public class JobSchedulerController {
 
     }
 
+    @PatchMapping("/{jobName}/stop")
+    public ResponseEntity stopJob(@PathVariable String jobName) {
+        try {
+            Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(JOB_GROUP))) {
+                if (jobKey.getName().equals(jobName)) {
+                    scheduler.interrupt(jobKey);
+                    scheduler.pauseJob(jobKey);
+                }
+            }
+            return ResponseEntity.ok(jobName + "paused");
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     private JobDetail createJob(ScheduledJobType jobType, String jobName, String content) {
         return JobBuilder.newJob(jobType.getJobClass())
                 .withDescription(jobType.name())
