@@ -1,8 +1,8 @@
 package prj.corey.jobscheduler.controllers;
 
 import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,10 +20,12 @@ public class JobSchedulerController {
     private static final String JOB_GROUP = "jobSchedulerGroup";
     private static final String DATA_MAP_KEY = "content";
 
+    @Autowired
+    private Scheduler scheduler;
+
     @GetMapping()
     public ResponseEntity getJobs() {
         try {
-            Scheduler scheduler = new StdSchedulerFactory().getScheduler();
             List<ScheduledJob> scheduledJobs = new ArrayList<>();
 
             for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(JOB_GROUP))) {
@@ -36,7 +38,8 @@ public class JobSchedulerController {
                 scheduledJob.setContent(scheduler.getJobDetail(jobKey).getJobDataMap().getString(DATA_MAP_KEY));
                 scheduledJob.setStartTime(trigger.getStartTime());
                 scheduledJob.setEndTime(trigger.getEndTime());
-                scheduler.getJobDetail(jobKey).getJobClass();
+                Trigger.TriggerState triggerState = scheduler.getTriggerState(trigger.getKey());
+                scheduledJob.setJobStatus(triggerState.toString());
                 scheduledJobs.add(scheduledJob);
             }
             return ResponseEntity.ok(scheduledJobs);
@@ -50,8 +53,6 @@ public class JobSchedulerController {
         JobDetail job = createJob(scheduledJob.getType(), scheduledJob.getName(), scheduledJob.getContent());
         Trigger trigger = createTrigger(scheduledJob.getName() + "Trigger", scheduledJob.getStartTime(), scheduledJob.getEndTime());
         try {
-            Scheduler scheduler = new StdSchedulerFactory().getScheduler();
-            scheduler.start();
             scheduler.scheduleJob(job, trigger);
             return ResponseEntity.ok(scheduledJob);
         } catch (SchedulerException e) {
@@ -59,6 +60,52 @@ public class JobSchedulerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
+    }
+
+    @PatchMapping("/{jobName}/stop")
+    public ResponseEntity stopJob(@PathVariable String jobName) {
+        try {
+            JobKey jobKey = getJobKeyFromName(scheduler, jobName);
+            scheduler.interrupt(jobKey);
+            scheduler.pauseJob(jobKey);
+            return ResponseEntity.ok(jobName + " paused");
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/{jobName}/resume")
+    public ResponseEntity resumeJob(@PathVariable String jobName) {
+        try {
+            JobKey jobKey = getJobKeyFromName(scheduler, jobName);
+            scheduler.resumeJob(jobKey);
+            return ResponseEntity.ok(jobName + " resumed execution");
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{jobName}")
+    public ResponseEntity deleteJob(@PathVariable String jobName) {
+        try {
+            JobKey jobKey = getJobKeyFromName(scheduler, jobName);
+            scheduler.deleteJob(jobKey);
+            return ResponseEntity.ok(jobName + " deleted");
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    private JobKey getJobKeyFromName(Scheduler scheduler, String jobName) throws SchedulerException {
+        for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(JOB_GROUP))) {
+            if (jobKey.getName().equals(jobName)) {
+                return jobKey;
+            }
+        }
+        throw new SchedulerException();
     }
 
     private JobDetail createJob(ScheduledJobType jobType, String jobName, String content) {
