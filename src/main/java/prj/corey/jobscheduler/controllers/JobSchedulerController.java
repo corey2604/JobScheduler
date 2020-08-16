@@ -1,7 +1,6 @@
 package prj.corey.jobscheduler.controllers;
 
 import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
