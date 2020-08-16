@@ -5,6 +5,7 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import prj.corey.jobscheduler.services.UserService;
 
 @Configuration
 public class SchedulerConfiguration {
@@ -16,4 +17,8 @@ public class SchedulerConfiguration {
         return scheduler;
     }
 
+    @Bean
+    public UserService getUserService() {
+        return UserService.getInstance();
+    }
 }
