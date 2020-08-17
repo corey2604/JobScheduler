@@ -1,72 +1,105 @@
 package prj.corey.jobscheduler.controllers;
 
-import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prj.corey.jobscheduler.models.ScheduledJob;
+import prj.corey.jobscheduler.models.User;
 import prj.corey.jobscheduler.services.SchedulerService;
+import prj.corey.jobscheduler.services.UserService;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/jobs")
 public class JobSchedulerController {
+    private static final ResponseEntity UNAUTHORIZED_RESPONSE =
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please log in.");
 
     @Autowired
     private SchedulerService schedulerService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping()
+
     public ResponseEntity getJobs() {
-        try {
-            return ResponseEntity.ok(schedulerService.getAllJobs());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        Optional<User> optionalUser = userService.getCurrentUser();
+        if (optionalUser.isPresent()) {
+            String username = optionalUser.get().getUsername();
+            try {
+                return ResponseEntity.ok(schedulerService.getAllJobs(username));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
         }
+        return UNAUTHORIZED_RESPONSE;
     }
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity runJob(@RequestBody ScheduledJob scheduledJob) {
-        try {
-            schedulerService.runJob(scheduledJob);
-            return ResponseEntity.ok(scheduledJob);
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        Optional<User> optionalUser = userService.getCurrentUser();
+        if (optionalUser.isPresent()) {
+            String username = optionalUser.get().getUsername();
+            try {
+                schedulerService.runJob(scheduledJob, username);
+                return ResponseEntity.ok(scheduledJob);
+            } catch (SchedulerException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
         }
-
+        return UNAUTHORIZED_RESPONSE;
     }
 
     @PatchMapping("/{jobName}/stop")
     public ResponseEntity stopJob(@PathVariable String jobName) {
-        try {
-            schedulerService.stopJob(jobName);
-            return ResponseEntity.ok(jobName + " paused");
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        Optional<User> optionalUser = userService.getCurrentUser();
+        if (optionalUser.isPresent()) {
+            String username = optionalUser.get().getUsername();
+            try {
+                schedulerService.stopJob(jobName, username);
+                return ResponseEntity.ok(jobName + " paused");
+            } catch (SchedulerException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
         }
+        return UNAUTHORIZED_RESPONSE;
     }
 
     @PatchMapping("/{jobName}/resume")
     public ResponseEntity resumeJob(@PathVariable String jobName) {
-        try {
-            schedulerService.resumeJob(jobName);
-            return ResponseEntity.ok(jobName + " resumed execution");
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        Optional<User> optionalUser = userService.getCurrentUser();
+        if (optionalUser.isPresent()) {
+            String username = optionalUser.get().getUsername();
+            try {
+                schedulerService.resumeJob(jobName, username);
+                return ResponseEntity.ok(jobName + " resumed execution");
+            } catch (SchedulerException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
         }
+        return UNAUTHORIZED_RESPONSE;
     }
 
     @DeleteMapping("/{jobName}")
     public ResponseEntity deleteJob(@PathVariable String jobName) {
-        try {
-            schedulerService.deleteJob(jobName);
-            return ResponseEntity.ok(jobName + " deleted");
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        Optional<User> optionalUser = userService.getCurrentUser();
+        if (optionalUser.isPresent()) {
+            String username = optionalUser.get().getUsername();
+            try {
+                schedulerService.deleteJob(jobName, username);
+                return ResponseEntity.ok(jobName + " deleted");
+            } catch (SchedulerException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
         }
+        return UNAUTHORIZED_RESPONSE;
     }
 }

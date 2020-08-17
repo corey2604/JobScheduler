@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public class UserService {
     private static UserService userService = null;
+    // Temporary usage as there is no external storage - limits to one logged in user at a time
     private Optional<User> currentUser = Optional.empty();
     private List<User> users = new ArrayList<>();
 
@@ -31,7 +32,11 @@ public class UserService {
     }
 
     public boolean logIn(User user) {
-        return users.contains(user);
+        boolean userExists = users.contains(user);
+        if (userExists) {
+            currentUser = Optional.of(user);
+        }
+        return userExists;
     }
 
     public Optional<User> getCurrentUser() {

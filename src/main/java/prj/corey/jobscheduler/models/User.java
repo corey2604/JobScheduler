@@ -19,4 +19,15 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        return (this.getUsername().equals(((User) obj).getUsername()) &&  this.getPassword().equals(((User) obj).getPassword()));
+    }
 }
