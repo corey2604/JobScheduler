@@ -1,4 +1,4 @@
-package prj.corey.jobscheduler.services;
+package prj.corey.jobscheduler.services.schedulerService;
 
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -11,24 +11,25 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SchedulerService {
+public class SchedulerServiceImpl implements SchedulerService {
     private static final String JOB_GROUP = "jobSchedulerGroup";
     private static final String DATA_MAP_KEY = "content";
-    private static SchedulerService schedulerService = null;
+    private static SchedulerServiceImpl schedulerService = null;
     @Autowired
     private Scheduler scheduler;
 
-    private SchedulerService() {
+    private SchedulerServiceImpl() {
     }
 
-    public static SchedulerService getInstance() {
+    public static SchedulerServiceImpl getInstance() {
         if (schedulerService == null) {
-            schedulerService = new SchedulerService();
+            schedulerService = new SchedulerServiceImpl();
         }
         return schedulerService;
     }
 
 
+    @Override
     public List<ScheduledJob> getAllJobs(String username) throws SchedulerException {
         List<ScheduledJob> scheduledJobs = new ArrayList<>();
 
@@ -49,6 +50,7 @@ public class SchedulerService {
         return scheduledJobs;
     }
 
+    @Override
     public void runJob(ScheduledJob scheduledJob, String username) throws SchedulerException {
         JobDetail job = createJob(scheduledJob.getType(), scheduledJob.getName(), scheduledJob.getContent(), username);
         Trigger trigger = createTrigger(scheduledJob.getName() + "Trigger", scheduledJob.getStartTime(),
@@ -56,17 +58,20 @@ public class SchedulerService {
         scheduler.scheduleJob(job, trigger);
     }
 
+    @Override
     public void stopJob(String jobName, String username) throws SchedulerException {
         JobKey jobKey = getJobKeyFromName(scheduler, jobName, username);
         scheduler.interrupt(jobKey);
         scheduler.pauseJob(jobKey);
     }
 
+    @Override
     public void resumeJob(String jobName, String username) throws SchedulerException {
         JobKey jobKey = getJobKeyFromName(scheduler, jobName, username);
         scheduler.resumeJob(jobKey);
     }
 
+    @Override
     public void deleteJob(String jobName, String username) throws SchedulerException {
         JobKey jobKey = getJobKeyFromName(scheduler, jobName, username);
         scheduler.deleteJob(jobKey);

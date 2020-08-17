@@ -5,11 +5,13 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import prj.corey.jobscheduler.services.SchedulerService;
-import prj.corey.jobscheduler.services.UserService;
+import prj.corey.jobscheduler.services.schedulerService.SchedulerService;
+import prj.corey.jobscheduler.services.schedulerService.SchedulerServiceImpl;
+import prj.corey.jobscheduler.services.userService.UserService;
+import prj.corey.jobscheduler.services.userService.UserServiceImpl;
 
 @Configuration
-public class SchedulerConfiguration {
+public class ApplicationConfiguration {
 
     @Bean
     public Scheduler getScheduler() throws SchedulerException {
@@ -20,11 +22,11 @@ public class SchedulerConfiguration {
 
     @Bean
     public SchedulerService getSchedulerService() {
-        return SchedulerService.getInstance();
+        return SchedulerServiceImpl.getInstance();
     }
 
     @Bean
     public UserService getUserService() {
-        return UserService.getInstance();
+        return UserServiceImpl.getInstance();
     }
 }

@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prj.corey.jobscheduler.models.ScheduledJob;
 import prj.corey.jobscheduler.models.User;
-import prj.corey.jobscheduler.services.SchedulerService;
-import prj.corey.jobscheduler.services.UserService;
+import prj.corey.jobscheduler.services.schedulerService.SchedulerService;
+import prj.corey.jobscheduler.services.userService.UserService;
 
 import java.util.Optional;
 

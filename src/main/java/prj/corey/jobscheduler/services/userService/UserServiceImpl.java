@@ -1,4 +1,4 @@
-package prj.corey.jobscheduler.services;
+package prj.corey.jobscheduler.services.userService;
 
 import prj.corey.jobscheduler.models.User;
 
@@ -6,22 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class UserService {
-    private static UserService userService = null;
+public class UserServiceImpl implements UserService {
+    private static UserServiceImpl userService = null;
     // Temporary usage as there is no external storage - limits to one logged in user at a time
     private Optional<User> currentUser = Optional.empty();
     private List<User> users = new ArrayList<>();
 
-    private UserService() {
+    private UserServiceImpl() {
     }
 
-    public static UserService getInstance() {
+    public static UserServiceImpl getInstance() {
         if (userService == null) {
-            userService = new UserService();
+            userService = new UserServiceImpl();
         }
         return userService;
     }
 
+    @Override
     public boolean signUp(User user) {
         if (users.contains(user)) {
             return false;
@@ -31,6 +32,7 @@ public class UserService {
         return true;
     }
 
+    @Override
     public boolean logIn(User user) {
         boolean userExists = users.contains(user);
         if (userExists) {
@@ -39,10 +41,12 @@ public class UserService {
         return userExists;
     }
 
+    @Override
     public Optional<User> getCurrentUser() {
         return currentUser;
     }
 
+    @Override
     public void logOut() {
         if (currentUser.isPresent()) {
             currentUser = Optional.empty();
