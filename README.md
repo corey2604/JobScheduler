@@ -96,10 +96,11 @@ Deletes the job matching the supplied job name outright
 
 ## Further Improvements
 The following areas could be improved/implemented:
-- Testing coverage
+- Expand testing coverage
 - Encapsulating error handling within services, especially schedulerService
 - More detailed error responses for bad requests
 - Data persistence - particularly for user data
+- Migrate models to builder pattern
 - Increased security around user input/requests (and improved parsing in general, e.g. around dates)
 - Allowing users to specify a time interval for jobs
 - Allowing for further job coverage, potentially allowing users to execute their own code
