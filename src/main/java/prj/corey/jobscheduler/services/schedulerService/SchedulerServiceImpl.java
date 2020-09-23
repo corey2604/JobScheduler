@@ -3,6 +3,7 @@ package prj.corey.jobscheduler.services.schedulerService;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import prj.corey.jobscheduler.jobs.AbstractJob;
 import prj.corey.jobscheduler.models.ScheduledJob;
 import prj.corey.jobscheduler.models.ScheduledJobType;
@@ -11,23 +12,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Service("schedulerService")
 public class SchedulerServiceImpl implements SchedulerService {
     private static final String JOB_GROUP = "jobSchedulerGroup";
     private static final String DATA_MAP_KEY = "content";
-    private static SchedulerServiceImpl schedulerService = null;
+    private final Scheduler scheduler;
+
     @Autowired
-    private Scheduler scheduler;
-
-    private SchedulerServiceImpl() {
+    public SchedulerServiceImpl(Scheduler scheduler) {
+        this.scheduler = scheduler;
     }
-
-    public static SchedulerServiceImpl getInstance() {
-        if (schedulerService == null) {
-            schedulerService = new SchedulerServiceImpl();
-        }
-        return schedulerService;
-    }
-
 
     @Override
     public List<ScheduledJob> getAllJobs(String username) throws SchedulerException {

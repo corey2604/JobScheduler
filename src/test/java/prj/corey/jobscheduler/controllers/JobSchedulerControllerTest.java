@@ -28,8 +28,7 @@ public class JobSchedulerControllerTest {
     @Mock
     private SchedulerService schedulerService;
 
-    @InjectMocks
-    private JobSchedulerController jobSchedulerController = new JobSchedulerController();
+    private JobSchedulerController jobSchedulerController = new JobSchedulerController(schedulerService, userService);
 
     private User testUser;
 
