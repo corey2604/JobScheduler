@@ -1,6 +1,5 @@
 package prj.corey.jobscheduler.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prj.corey.jobscheduler.models.User;
@@ -11,8 +10,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping(path = "/signUp", consumes = "application/json")
     public ResponseEntity signUp(@RequestBody User user) {

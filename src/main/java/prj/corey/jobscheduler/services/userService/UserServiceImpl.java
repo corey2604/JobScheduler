@@ -1,26 +1,17 @@
 package prj.corey.jobscheduler.services.userService;
 
+import org.springframework.stereotype.Service;
 import prj.corey.jobscheduler.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service("userService")
 public class UserServiceImpl implements UserService {
-    private static UserServiceImpl userService = null;
     // Temporary usage as there is no external storage - limits to one logged in user at a time
     private Optional<User> currentUser = Optional.empty();
     private List<User> users = new ArrayList<>();
-
-    private UserServiceImpl() {
-    }
-
-    public static UserServiceImpl getInstance() {
-        if (userService == null) {
-            userService = new UserServiceImpl();
-        }
-        return userService;
-    }
 
     @Override
     public boolean signUp(User user) {
