@@ -2,7 +2,6 @@ package prj.corey.jobscheduler.services.schedulerService;
 
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import prj.corey.jobscheduler.jobs.AbstractJob;
 import prj.corey.jobscheduler.models.ScheduledJob;
@@ -18,7 +17,6 @@ public class SchedulerServiceImpl implements SchedulerService {
     private static final String DATA_MAP_KEY = "content";
     private final Scheduler scheduler;
 
-    @Autowired
     public SchedulerServiceImpl(Scheduler scheduler) {
         this.scheduler = scheduler;
     }

@@ -1,7 +1,6 @@
 package prj.corey.jobscheduler.controllers;
 
 import org.quartz.SchedulerException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,6 @@ public class JobSchedulerController {
     private final SchedulerService schedulerService;
     private final UserService userService;
 
-    @Autowired
     public JobSchedulerController(SchedulerService schedulerService, UserService userService) {
         this.schedulerService = schedulerService;
         this.userService = userService;
