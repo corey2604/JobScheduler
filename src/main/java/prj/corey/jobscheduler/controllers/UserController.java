@@ -29,13 +29,13 @@ public class UserController {
     }
 
     @GetMapping(path = "/current")
-    public ResponseEntity getCurrentUser() {
-        Optional<User> currentUser = userService.getCurrentUser();
-        return ResponseEntity.ok(currentUser.isPresent() ? currentUser.get().getUsername() : "Not logged in.");
+    public ResponseEntity<String> getCurrentUser() {
+        Optional<String> currentUsername = userService.getCurrentUsername();
+        return ResponseEntity.ok(currentUsername.orElse("Not logged in."));
     }
 
     @GetMapping(path = "/current/logOut")
-    public ResponseEntity logOutCurrentUser() {
+    public ResponseEntity<String> logOutCurrentUser() {
         userService.logOut();
         return ResponseEntity.ok("Logged Out.");
     }

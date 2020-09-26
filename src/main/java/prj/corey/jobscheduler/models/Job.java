@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
-public class ScheduledJob {
+public class Job {
     private String name;
-    private ScheduledJobType type;
+    private JobType type;
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Europe/London")
     private Date startTime;
@@ -22,11 +22,11 @@ public class ScheduledJob {
         this.name = name;
     }
 
-    public ScheduledJobType getType() {
+    public JobType getType() {
         return type;
     }
 
-    public void setType(ScheduledJobType type) {
+    public void setType(JobType type) {
         this.type = type;
     }
 

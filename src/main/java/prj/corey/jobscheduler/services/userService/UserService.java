@@ -10,7 +10,7 @@ public interface UserService {
 
     boolean logIn(User user);
 
-    Optional<User> getCurrentUser();
+    Optional<String> getCurrentUsername();
 
     void logOut();
 }

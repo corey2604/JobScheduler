@@ -8,7 +8,7 @@ public class PrintJob extends AbstractJob {
     @Override
     public void execute(JobExecutionContext context) {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
-        String message = dataMap.getString(CONTENT);
-        System.out.println(message);
+        String contentToPrint = dataMap.getString(CONTENT);
+        System.out.println(contentToPrint);
     }
 }

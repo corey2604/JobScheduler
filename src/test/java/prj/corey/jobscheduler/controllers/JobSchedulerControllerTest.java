@@ -2,7 +2,6 @@ package prj.corey.jobscheduler.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.quartz.SchedulerException;
@@ -10,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import prj.corey.jobscheduler.models.User;
-import prj.corey.jobscheduler.services.schedulerService.SchedulerService;
+import prj.corey.jobscheduler.services.jobSchedulerService.JobSchedulerService;
 import prj.corey.jobscheduler.services.userService.UserService;
 
 import java.util.Collections;
@@ -26,9 +25,9 @@ public class JobSchedulerControllerTest {
     private UserService userService;
 
     @Mock
-    private SchedulerService schedulerService;
+    private JobSchedulerService jobSchedulerService;
 
-    private JobSchedulerController jobSchedulerController = new JobSchedulerController(schedulerService, userService);
+    private JobSchedulerController jobSchedulerController = new JobSchedulerController(jobSchedulerService, userService);
 
     private User testUser;
 
@@ -43,8 +42,8 @@ public class JobSchedulerControllerTest {
     @Test
     public void testGetJobsReturnsOkResponseWhenUserLoggedIn() throws SchedulerException {
         // given
-        doReturn(Optional.of(testUser)).when(userService).getCurrentUser();
-        doReturn(Collections.emptyList()).when(schedulerService).getAllJobs(testUser.getUsername());
+        doReturn(Optional.of(testUser)).when(userService).getCurrentUsername();
+        doReturn(Collections.emptyList()).when(jobSchedulerService).getAllJobs(testUser.getUsername());
 
         // when
         ResponseEntity response = jobSchedulerController.getJobs();

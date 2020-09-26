@@ -11,7 +11,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     // Temporary usage as there is no external storage - limits to one logged in user at a time
     private Optional<User> currentUser = Optional.empty();
-    private List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
 
     @Override
     public boolean signUp(User user) {
@@ -33,8 +33,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getCurrentUser() {
-        return currentUser;
+    public Optional<String> getCurrentUsername() {
+        return currentUser.map(User::getUsername);
     }
 
     @Override

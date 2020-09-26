@@ -97,7 +97,7 @@ Deletes the job matching the supplied job name outright
 ## Further Improvements
 The following areas could be improved/implemented:
 - Expand testing coverage
-- Encapsulating error handling within services, especially schedulerService
+- Encapsulating error handling within services, especially jobSchedulerService
 - More detailed error responses for bad requests
 - Data persistence - particularly for user data
 - Migrate models to builder pattern
